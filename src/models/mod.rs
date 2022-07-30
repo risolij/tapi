@@ -1,2 +1,2 @@
-pub mod transaction;
 pub mod category;
+pub mod transaction;
