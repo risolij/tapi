@@ -1,12 +1,8 @@
+use actix_web::{http::header::ContentType, http::StatusCode, HttpResponse, ResponseError};
 use strum_macros::Display;
-use actix_web::{
-    ResponseError, 
-    HttpResponse, 
-    http::StatusCode, 
-    http::header::ContentType,
-};
+use utoipa::Component;
 
-#[derive(Debug, Display)]
+#[derive(Debug, Display, Component)]
 pub enum TransactionError {
     TransactionNotFound,
     TransactionInvalid,
@@ -18,7 +14,6 @@ impl ResponseError for TransactionError {
             Self::TransactionNotFound => StatusCode::NOT_FOUND,
             Self::TransactionInvalid => StatusCode::BAD_REQUEST,
         }
-        
     }
 
     fn error_response(&self) -> HttpResponse {
@@ -27,4 +22,3 @@ impl ResponseError for TransactionError {
             .json(self.to_string())
     }
 }
-

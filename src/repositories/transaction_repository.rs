@@ -1,9 +1,8 @@
-use crate::models::transaction::{Transaction, PostTransaction, UpdateTransaction};
-use crate::errors::TransactionError;
-use uuid::Uuid;
-use async_trait::async_trait;
 use super::repository::Repository;
-use log::info;
+use crate::errors::TransactionError;
+use crate::models::transaction::{PostTransaction, Transaction, UpdateTransaction};
+use async_trait::async_trait;
+use uuid::Uuid;
 
 pub struct TransactionRepository {
     pool: sqlx::PgPool,
@@ -16,7 +15,9 @@ impl TransactionRepository {
 }
 
 #[async_trait]
-impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionError> for TransactionRepository {
+impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionError>
+    for TransactionRepository
+{
     async fn post(&self, other: PostTransaction) -> Result<Transaction, TransactionError> {
         const QUERY: &str = "INSERT INTO transactions ( user_id, account_id, amount, created ) 
             VALUES ( $1, $2, $3, $4 ) returning *";
@@ -56,7 +57,11 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
         Ok(ts)
     }
 
-    async fn update(&self, id: Uuid, other: UpdateTransaction) -> Result<Option<Transaction>, TransactionError> {
+    async fn update(
+        &self,
+        id: Uuid,
+        other: UpdateTransaction,
+    ) -> Result<Option<Transaction>, TransactionError> {
         const QUERY: &str = "
             UPDATE transactions 
                 SET amount = $1 

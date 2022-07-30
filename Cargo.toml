@@ -17,3 +17,5 @@ dotenv = "0.15.0"
 sqlx = { version = "0.6.0", features = ["postgres", "uuid", "runtime-actix-rustls", "chrono"] }
 async-trait = "0.1.56"
 chrono = { version = "0.4.19", features = ["serde"] }
+utoipa = { version = "1.1.0", features = ["actix_extras", "uuid", "chrono_with_format"] }
+utoipa-swagger-ui = { version = "1.1.0", features = ["actix-web"] }
