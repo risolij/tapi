@@ -19,3 +19,8 @@ pub struct PostTransaction {
     pub account_id: Uuid,
     pub amount: f32,
 }
+
+#[derive(Serialize, Deserialize, Copy, Clone)]
+pub struct UpdateTransaction {
+    pub amount: f64
+}
