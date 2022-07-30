@@ -42,47 +42,5 @@ Transaction -up-> endpoint
 
 @enduml
 #+end_src
-
-#+RESULTS:
-[[file:assets/diagram.png]]
-** UML
-#+begin_example
-@startuml
-!include <awslib/AWSCommon>
-!include <awslib/AWSSimplified.puml>
-!include <awslib/Compute/all.puml>
-!include <awslib/mobile/all.puml>
-!include <awslib/general/all.puml>
-!include <awslib/GroupIcons/all.puml>
-
-allowmixing 
-
-struct Transaction {
-  + transaction_id: Uuid
-  + user_id: Uuid
-  + account_id: Uuid
-  + created: NaiveDateTime
-  + amount: f32
-}
-
-struct TransactionRepository {
-  + db
-}
-
-abstract Repository {
-  - fn post()
-  - fn get_one()
-  - get_all()
-}
-database Postgres
-Users(Users, "Users", " ")
-
-Users <-down-> endpoint
-endpoint -down-> TransactionRepository
-Repository -up-> TransactionRepository
-TransactionRepository -> Postgres
-Postgres -> Transaction
-Transaction -up-> endpoint
-
-@enduml
-#+end_example
+** Flow
+[[assets/diagram.png]]
