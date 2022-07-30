@@ -27,7 +27,7 @@ struct TransactionRepository {
 abstract Repository {
   - fn post()
   - fn get_one()
-  - get_all()
+  - fn get_all()
 }
 database Postgres
 Users(Users, "Users", " ")
