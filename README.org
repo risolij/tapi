@@ -1,9 +1,8 @@
-#+TITLE: Transactions API
-
 * Basic API Design Flow
 ** Outline
 #+begin_src plantuml :file assets/diagram.png
 @startuml
+!theme materia
 !include <awslib/AWSCommon>
 !include <awslib/AWSSimplified.puml>
 !include <awslib/Compute/all.puml>
@@ -42,5 +41,6 @@ Transaction -up-> endpoint
 
 @enduml
 #+end_src
+
 ** Flow
 [[assets/diagram.png]]
