@@ -3,6 +3,7 @@ use crate::errors::TransactionError;
 use uuid::Uuid;
 use async_trait::async_trait;
 use super::repository::Repository;
+use log::info;
 
 pub struct TransactionRepository {
     pool: sqlx::PgPool,
@@ -56,14 +57,17 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
     }
 
     async fn update(&self, id: Uuid, other: UpdateTransaction) -> Result<Option<Transaction>, TransactionError> {
-        const QUERY: &str = "UPDATE transactions SET amount = $1 WHERE transaction_id = '$2'";
+        const QUERY: &str = "
+            UPDATE transactions 
+                SET amount = $1 
+            WHERE transaction_id = $2 returning *";
 
         let ts: Option<Transaction> = sqlx::query_as(QUERY)
             .bind(other.amount)
             .bind(id)
             .fetch_optional(&self.pool)
             .await
-            .map_err(|_| TransactionError::TransactionNotFound)?;
+            .map_err(|_| TransactionError::TransactionInvalid)?;
 
         Ok(ts)
     }

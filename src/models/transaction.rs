@@ -4,7 +4,7 @@ use uuid::Uuid;
 use serde::{Serialize, Deserialize};
 use chrono::NaiveDateTime;
 
-#[derive(Serialize, Deserialize, Copy, Clone, FromRow)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, FromRow)]
 pub struct Transaction {
     pub transaction_id: Uuid,
     pub user_id: Uuid,
