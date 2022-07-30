@@ -13,7 +13,11 @@ mod repositories;
 use models::transaction::{PostTransaction, Transaction, UpdateTransaction};
 
 use api::transaction::{
-    get_transaction_by_id, get_transactions, post_transaction, update_transaction,
+    get_transaction_by_id, 
+    get_transactions, 
+    post_transaction, 
+    update_transaction,
+    delete_transaction
 };
 
 use utoipa::OpenApi;
@@ -32,7 +36,8 @@ async fn establish_connection_pool() -> PgPool {
         api::transaction::get_transactions,
         api::transaction::post_transaction,
         api::transaction::get_transaction_by_id,
-        api::transaction::update_transaction
+        api::transaction::update_transaction,
+        api::transaction::delete_transaction
     ),
     components(Transaction, PostTransaction, UpdateTransaction)
 )]
@@ -60,6 +65,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_transactions)
             .service(post_transaction)
             .service(get_transaction_by_id)
+            .service(delete_transaction)
             .service(update_transaction)
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-doc/openapi.json", openapi.clone()),

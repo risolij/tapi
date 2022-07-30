@@ -1,4 +1,4 @@
-use actix_web::{get, patch, post, web, web::Json, HttpResponse};
+use actix_web::{get, delete, patch, post, web, web::Json, HttpResponse};
 use uuid::Uuid;
 
 use crate::{
@@ -27,6 +27,7 @@ pub async fn get_transactions(repository: Repo) -> TransactionResponse {
 /// POST :: Create a new transaction
 #[utoipa::path(
     post, 
+    request_body = PostTransaction,
     path = "/api/transactions",
     responses(
         (status = 201, description = "Transaction created", body = Transaction),
@@ -38,7 +39,7 @@ pub async fn post_transaction(
     posted: Json<PostTransaction>,
 ) -> TransactionResponse {
     let ts = repository.post(posted.into_inner()).await?;
-    Ok(HttpResponse::Ok().json(ts))
+    Ok(HttpResponse::Created().json(ts))
 }
 
 /// GET :: Get single transaction by ID
@@ -60,7 +61,15 @@ pub async fn get_transaction_by_id(repository: Repo, id: web::Path<Uuid>) -> Tra
 }
 
 /// PATCH :: Update transaction by ID
-#[utoipa::path(patch, path = "/api/transactions/{id}")]
+#[utoipa::path(
+    patch, 
+    request_body = UpdateTransaction,
+    path = "/api/transactions/{id}",
+    responses(
+        (status = 200, description = "Transaction Updated!", body = Transaction),
+        (status = 404, description = "Transaction not found")
+    )
+)]
 #[patch("/api/transactions/{id}")]
 pub async fn update_transaction(
     respository: Repo,
@@ -74,4 +83,18 @@ pub async fn update_transaction(
         Some(transaction) => Ok(HttpResponse::Ok().json(transaction)),
         None => Err(TransactionError::TransactionInvalid),
     }
+}
+
+/// DELETE :: Delete transaction by ID
+#[utoipa::path(
+    delete, 
+    path = "/api/transactions/{id}",
+    responses(
+        (status = 202, description = "Delete request accepted!"),
+        (status = 404, description = "Transaction not found")
+    )
+)]
+#[delete("/api/transactions/{id}")]
+pub async fn delete_transaction(repository: Repo, id: web::Path<Uuid>) -> TransactionResponse {
+    repository.delete(id.into_inner()).await
 }

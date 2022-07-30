@@ -3,6 +3,7 @@ use crate::errors::TransactionError;
 use crate::models::transaction::{PostTransaction, Transaction, UpdateTransaction};
 use async_trait::async_trait;
 use uuid::Uuid;
+use actix_web::HttpResponse;
 
 pub struct TransactionRepository {
     pool: sqlx::PgPool,
@@ -75,5 +76,23 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
             .map_err(|_| TransactionError::TransactionInvalid)?;
 
         Ok(ts)
+    }
+
+    async fn delete(&self, id: Uuid) -> Result<HttpResponse, TransactionError> {
+        const QUERY: &str = "DELETE from transactions WHERE transaction_id = $1";
+
+        let record = sqlx::query(QUERY)
+            .bind(id)
+            .execute(&self.pool)
+            .await
+            .map_err(|_| TransactionError::TransactionInvalid)?
+            .rows_affected();
+
+        if record > 0 {
+            return Ok(HttpResponse::Accepted().finish());
+        } else {
+            return Err(TransactionError::TransactionNotFound);
+        }
+
     }
 }
