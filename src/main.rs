@@ -10,7 +10,12 @@ mod models;
 mod repositories;
 mod errors;
 
-use api::transaction::{post_transaction, get_transactions, get_transaction_by_id};
+use api::transaction::{
+    post_transaction, 
+    get_transactions, 
+    get_transaction_by_id,
+    update_transaction
+};
 
 async fn establish_connection_pool() -> PgPool {
     let connection = std::env::var("DATABASE_URL").expect("Failed to get DB URL");
@@ -39,6 +44,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_transactions)
             .service(post_transaction)
             .service(get_transaction_by_id)
+            .service(update_transaction)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
