@@ -1,6 +1,8 @@
 backend/target
+backend/.env
 target
 .git
 .env
 .direnv
 frontend/target
+frontend/dist
