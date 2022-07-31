@@ -1,3 +1,12 @@
+use sqlx::PgPool;
+
+pub async fn establish_connection_pool() -> PgPool {
+    let connection = std::env::var("DATABASE_URL").expect("Failed to get DB URL");
+    sqlx::PgPool::connect(&connection)
+        .await
+        .expect("Failed to create pool")
+}
+
 pub trait Schema {
     type Id: Send;
 
