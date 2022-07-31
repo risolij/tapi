@@ -17,8 +17,7 @@ impl TransactionRepository {
 }
 
 #[async_trait]
-impl Repository
-    for TransactionRepository
+impl Repository for TransactionRepository
 {
     type Entity = Transaction;
     type Update = UpdateTransaction;
