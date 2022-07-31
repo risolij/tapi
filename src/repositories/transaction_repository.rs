@@ -66,9 +66,7 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
             .bind(id)
             .execute(&self.pool)
             .await
-            .map_err(|e| TransactionError::DatabaseError(e))?;
-
-
-        Ok(HttpResponse::Accepted().finish())
+            .and_then(|_| Ok(HttpResponse::Accepted().finish()))
+            .map_err(|e| TransactionError::DatabaseError(e))
     }
 }
