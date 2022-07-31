@@ -9,14 +9,15 @@ use actix_web::{middleware::Logger, web, App, HttpServer};
 use log::info;
 use sqlx::postgres::PgPool;
 
-mod api;
+mod controllers;
 mod errors;
 mod models;
 mod repositories;
 mod lib;
+
 use models::transaction::{PostTransaction, Transaction, UpdateTransaction};
 
-use api::transaction::{
+use controllers::transaction::{
     get_transaction_by_id, 
     get_transactions, 
     post_transaction, 
@@ -37,11 +38,11 @@ async fn establish_connection_pool() -> PgPool {
 #[derive(OpenApi)]
 #[openapi(
     handlers(
-        api::transaction::get_transactions,
-        api::transaction::post_transaction,
-        api::transaction::get_transaction_by_id,
-        api::transaction::update_transaction,
-        api::transaction::delete_transaction
+        controllers::transaction::get_transactions,
+        controllers::transaction::post_transaction,
+        controllers::transaction::get_transaction_by_id,
+        controllers::transaction::update_transaction,
+        controllers::transaction::delete_transaction
     ),
     components(Transaction, PostTransaction, UpdateTransaction)
 )]
