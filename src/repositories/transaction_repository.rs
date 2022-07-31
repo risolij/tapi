@@ -34,7 +34,6 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
             .fetch_one(&self.pool)
             .await
             .map_err(|e| TransactionError::DatabaseError(e))
-        
     }
 
     async fn get_one(&self, id: Uuid) -> OptionalTransactionResult {
@@ -53,7 +52,6 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
     }
 
     async fn update(&self, id: Uuid, other: UpdateTransaction) -> OptionalTransactionResult {
-
         sqlx::query_as(Transaction::sql_update())
             .bind(other.amount)
             .bind(other.category)
