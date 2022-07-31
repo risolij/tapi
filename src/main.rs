@@ -13,6 +13,7 @@ mod api;
 mod errors;
 mod models;
 mod repositories;
+mod lib;
 use models::transaction::{PostTransaction, Transaction, UpdateTransaction};
 
 use api::transaction::{
