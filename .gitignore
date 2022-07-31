@@ -1,4 +1,5 @@
-target
-.git
-.env
 .direnv
+.git/
+target
+backend/target
+frontend/target
