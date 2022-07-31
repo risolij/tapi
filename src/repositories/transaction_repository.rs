@@ -46,8 +46,6 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
     }
 
     async fn get_all(&self) -> MultiTransacationResult {
-        const QUERY: &str = "SELECT * FROM transactions";
-
         sqlx::query_as(Transaction::sql_select())
             .fetch_all(&self.pool)
             .await
