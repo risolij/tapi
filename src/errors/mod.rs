@@ -1,4 +1,9 @@
-use actix_web::{http::header::ContentType, http::StatusCode, HttpResponse, ResponseError};
+use actix_web::{
+    http::header::ContentType, 
+    http::StatusCode, 
+    HttpResponse, 
+    ResponseError
+};
 use strum_macros::Display;
 use utoipa::Component;
 
