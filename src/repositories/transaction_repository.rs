@@ -20,14 +20,19 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
     for TransactionRepository
 {
     async fn post(&self, other: PostTransaction) -> Result<Transaction, TransactionError> {
-        const QUERY: &str = "INSERT INTO transactions ( user_id, account_id, amount, created ) 
-            VALUES ( $1, $2, $3, $4 ) returning *";
+        const QUERY: &str = "
+        INSERT INTO transactions 
+            ( user_id, account_id, amount, created, category ) 
+        VALUES 
+            ( $1, $2, $3, $4, $5 ) 
+        returning *";
 
         let ts: Transaction = sqlx::query_as(QUERY)
             .bind(other.user_id)
             .bind(other.account_id)
             .bind(other.amount)
             .bind(chrono::Utc::now())
+            .bind(other.category)
             .fetch_one(&self.pool)
             .await
             .map_err(|_| TransactionError::TransactionInvalid)?;
@@ -64,12 +69,14 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
         other: UpdateTransaction,
     ) -> Result<Option<Transaction>, TransactionError> {
         const QUERY: &str = "
-            UPDATE transactions 
-                SET amount = $1 
-            WHERE transaction_id = $2 returning *";
+            UPDATE transactions SET 
+                amount = $1, 
+                category = $2 
+            WHERE transaction_id = $3 returning *";
 
         let ts: Option<Transaction> = sqlx::query_as(QUERY)
             .bind(other.amount)
+            .bind(other.category)
             .bind(id)
             .fetch_optional(&self.pool)
             .await

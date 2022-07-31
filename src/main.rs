@@ -1,5 +1,8 @@
 extern crate env_logger;
 extern crate utoipa;
+extern crate strum;
+#[macro_use] 
+extern crate strum_macros;
 
 use crate::repositories::transaction_repository::TransactionRepository;
 use actix_web::{middleware::Logger, web, App, HttpServer};
