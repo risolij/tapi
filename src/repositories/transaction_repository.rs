@@ -81,18 +81,13 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
     async fn delete(&self, id: Uuid) -> Result<HttpResponse, TransactionError> {
         const QUERY: &str = "DELETE from transactions WHERE transaction_id = $1";
 
-        let record = sqlx::query(QUERY)
+        sqlx::query(QUERY)
             .bind(id)
             .execute(&self.pool)
             .await
-            .map_err(|e| TransactionError::DatabaseError(e))?
-            .rows_affected();
+            .map_err(|e| TransactionError::DatabaseError(e))?;
 
-        if record > 0 {
-            return Ok(HttpResponse::Accepted().finish());
-        } else {
-            return Err(TransactionError::TransactionNotFound);
-        }
 
+        Ok(HttpResponse::Accepted().finish())
     }
 }
