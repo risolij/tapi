@@ -58,10 +58,14 @@
 
         devShell = pkgs.mkShell {
           buildInputs = [ 
-            (rustVersion ( toolchain: toolchain.default.override { extensions = [ "rust-src" ]; }))
+            (rustVersion ( toolchain: toolchain.default.override { 
+              extensions = [ "rust-src" ]; 
+              targets = ["wasm32-unknown-unknown"];
+            }))
             pkgs.rust-analyzer 
             pkgs.sqlx-cli
             pkgs.postgresql
+            pkgs.trunk
           ];
         };
       }

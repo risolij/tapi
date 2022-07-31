@@ -1,0 +1,5 @@
+* Tapi Frontend
+** build && run 
+#+begin_src sh
+trunk serve --open
+#+end_src
