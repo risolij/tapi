@@ -7,7 +7,6 @@ extern crate strum_macros;
 use crate::repositories::transaction_repository::TransactionRepository;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use log::info;
-use sqlx::postgres::PgPool;
 
 mod controllers;
 mod errors;
@@ -15,38 +14,18 @@ mod models;
 mod repositories;
 mod lib;
 
-use models::transaction::{PostTransaction, Transaction, UpdateTransaction};
-
+use models::api_doc::ApiDoc;
+use crate::lib::establish_connection_pool;
+use utoipa_swagger_ui::SwaggerUi;
+use utoipa::OpenApi;
 use controllers::transaction::{
-    get_transaction_by_id, 
-    get_transactions, 
-    post_transaction, 
-    update_transaction,
-    delete_transaction
+    get_transactions,
+    post_transaction,
+    get_transaction_by_id,
+    delete_transaction,
+    update_transaction
 };
 
-use utoipa::OpenApi;
-use utoipa_swagger_ui::SwaggerUi;
-
-async fn establish_connection_pool() -> PgPool {
-    let connection = std::env::var("DATABASE_URL").expect("Failed to get DB URL");
-    sqlx::PgPool::connect(&connection)
-        .await
-        .expect("Failed to create pool")
-}
-
-#[derive(OpenApi)]
-#[openapi(
-    handlers(
-        controllers::transaction::get_transactions,
-        controllers::transaction::post_transaction,
-        controllers::transaction::get_transaction_by_id,
-        controllers::transaction::update_transaction,
-        controllers::transaction::delete_transaction
-    ),
-    components(Transaction, PostTransaction, UpdateTransaction)
-)]
-struct ApiDoc;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -72,8 +51,8 @@ async fn main() -> std::io::Result<()> {
             .service(get_transaction_by_id)
             .service(delete_transaction)
             .service(update_transaction)
-            .service(
-                SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-doc/openapi.json", openapi.clone()),
+            .service(SwaggerUi::new("/swagger-ui/{_:.*}")
+                .url("/api-doc/openapi.json", openapi.clone())
             )
     })
     .bind(("127.0.0.1", 8080))?
