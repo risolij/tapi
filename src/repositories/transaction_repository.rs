@@ -23,6 +23,7 @@ impl Repository for TransactionRepository
     type Update = UpdateTransaction;
     type Insert = PostTransaction;
     type Error = TransactionError;
+    type Id = Uuid;
 
     async fn post(&self, other: Self::Insert) -> Result<Self::Entity, Self::Error> {
         sqlx::query_as(Transaction::sql_insert())
@@ -36,7 +37,7 @@ impl Repository for TransactionRepository
             .map_err(|e| TransactionError::DatabaseError(e))
     }
 
-    async fn get_one(&self, id: Uuid) -> Result<Option<Self::Entity>, Self::Error> {
+    async fn get_one(&self, id: Self::Id) -> Result<Option<Self::Entity>, Self::Error> {
         sqlx::query_as(Transaction::sql_select_by_id())
             .bind(id)
             .fetch_optional(&self.pool)
@@ -51,7 +52,7 @@ impl Repository for TransactionRepository
             .map_err(|e| TransactionError::DatabaseError(e))
     }
 
-    async fn update(&self, id: Uuid, other: Self::Update) -> Result<Option<Self::Entity>, Self::Error> {
+    async fn update(&self, id: Self::Id, other: Self::Update) -> Result<Option<Self::Entity>, Self::Error> {
         sqlx::query_as(Transaction::sql_update())
             .bind(other.amount)
             .bind(other.category)
@@ -61,7 +62,7 @@ impl Repository for TransactionRepository
             .map_err(|e| TransactionError::DatabaseError(e))
     }
 
-    async fn delete(&self, id: Uuid) -> Result<HttpResponse, Self::Error> {
+    async fn delete(&self, id: Self::Id) -> Result<HttpResponse, Self::Error> {
         sqlx::query(Transaction::sql_delete())
             .bind(id)
             .execute(&self.pool)
