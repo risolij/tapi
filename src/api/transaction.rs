@@ -56,7 +56,7 @@ pub async fn post_transaction(
 pub async fn get_transaction_by_id(repository: Repo, id: web::Path<Uuid>) -> TransactionResponse {
     match repository.get_one(id.into_inner()).await? {
         Some(transaction) => Ok(HttpResponse::Ok().json(transaction)),
-        None => Ok(HttpResponse::NoContent().finish()),
+        None => Err(TransactionError::TransactionNotFound),
     }
 }
 
@@ -76,10 +76,7 @@ pub async fn update_transaction(
     updated: Json<UpdateTransaction>,
     id: web::Path<Uuid>,
 ) -> TransactionResponse {
-    match respository
-        .update(id.into_inner(), updated.into_inner())
-        .await?
-    {
+    match respository.update(id.into_inner(), updated.into_inner()).await? {
         Some(transaction) => Ok(HttpResponse::Ok().json(transaction)),
         None => Err(TransactionError::TransactionInvalid),
     }

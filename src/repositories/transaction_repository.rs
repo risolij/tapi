@@ -27,7 +27,7 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
             ( $1, $2, $3, $4, $5 ) 
         returning *";
 
-        let ts: Transaction = sqlx::query_as(QUERY)
+        sqlx::query_as(QUERY)
             .bind(other.user_id)
             .bind(other.account_id)
             .bind(other.amount)
@@ -35,32 +35,27 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
             .bind(other.category)
             .fetch_one(&self.pool)
             .await
-            .map_err(|_| TransactionError::TransactionInvalid)?;
-
-        Ok(ts)
+            .map_err(|e| TransactionError::DatabaseError(e))
+        
     }
 
     async fn get_one(&self, id: Uuid) -> Result<Option<Transaction>, TransactionError> {
         const QUERY: &str = "select * from transactions where transaction_id = $1";
 
-        let ts: Option<Transaction> = sqlx::query_as(QUERY)
+        sqlx::query_as(QUERY)
             .bind(id)
             .fetch_optional(&self.pool)
             .await
-            .map_err(|_| TransactionError::TransactionNotFound)?;
-
-        Ok(ts)
+            .map_err(|e| TransactionError::DatabaseError(e))
     }
 
     async fn get_all(&self) -> Result<Vec<Transaction>, TransactionError> {
         const QUERY: &str = "SELECT * FROM transactions";
 
-        let ts: Vec<Transaction> = sqlx::query_as(QUERY)
+        sqlx::query_as(QUERY)
             .fetch_all(&self.pool)
             .await
-            .map_err(|_| TransactionError::TransactionNotFound)?;
-
-        Ok(ts)
+            .map_err(|e| TransactionError::DatabaseError(e))
     }
 
     async fn update(
@@ -74,15 +69,13 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
                 category = $2 
             WHERE transaction_id = $3 returning *";
 
-        let ts: Option<Transaction> = sqlx::query_as(QUERY)
+        sqlx::query_as(QUERY)
             .bind(other.amount)
             .bind(other.category)
             .bind(id)
             .fetch_optional(&self.pool)
             .await
-            .map_err(|_| TransactionError::TransactionInvalid)?;
-
-        Ok(ts)
+            .map_err(|e| TransactionError::DatabaseError(e))
     }
 
     async fn delete(&self, id: Uuid) -> Result<HttpResponse, TransactionError> {
@@ -92,7 +85,7 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
             .bind(id)
             .execute(&self.pool)
             .await
-            .map_err(|_| TransactionError::TransactionInvalid)?
+            .map_err(|e| TransactionError::DatabaseError(e))?
             .rows_affected();
 
         if record > 0 {

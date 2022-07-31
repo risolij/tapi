@@ -6,6 +6,14 @@ use utoipa::Component;
 pub enum TransactionError {
     TransactionNotFound,
     TransactionInvalid,
+    DatabaseError(sqlx::Error),
+
+}
+
+impl From<sqlx::Error> for TransactionError {
+    fn from(e: sqlx::Error) -> Self {
+        Self::DatabaseError(e)
+    }
 }
 
 impl ResponseError for TransactionError {
@@ -13,6 +21,7 @@ impl ResponseError for TransactionError {
         match *self {
             Self::TransactionNotFound => StatusCode::NOT_FOUND,
             Self::TransactionInvalid => StatusCode::BAD_REQUEST,
+            Self::DatabaseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
