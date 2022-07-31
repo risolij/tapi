@@ -15,11 +15,15 @@ impl TransactionRepository {
     }
 }
 
+type TransactionResult = Result<Transaction, TransactionError>;
+type MultiTransacationResult = Result<Vec<Transaction>, TransactionError>;
+type OptionalTransactionResult = Result<Option<Transaction>, TransactionError>;
+
 #[async_trait]
 impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionError>
     for TransactionRepository
 {
-    async fn post(&self, other: PostTransaction) -> Result<Transaction, TransactionError> {
+    async fn post(&self, other: PostTransaction) -> TransactionResult {
         const QUERY: &str = "
         INSERT INTO transactions 
             ( user_id, account_id, amount, created, category ) 
@@ -39,7 +43,7 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
         
     }
 
-    async fn get_one(&self, id: Uuid) -> Result<Option<Transaction>, TransactionError> {
+    async fn get_one(&self, id: Uuid) -> OptionalTransactionResult {
         const QUERY: &str = "select * from transactions where transaction_id = $1";
 
         sqlx::query_as(QUERY)
@@ -49,7 +53,7 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
             .map_err(|e| TransactionError::DatabaseError(e))
     }
 
-    async fn get_all(&self) -> Result<Vec<Transaction>, TransactionError> {
+    async fn get_all(&self) -> MultiTransacationResult {
         const QUERY: &str = "SELECT * FROM transactions";
 
         sqlx::query_as(QUERY)
@@ -58,11 +62,7 @@ impl Repository<Transaction, PostTransaction, UpdateTransaction, TransactionErro
             .map_err(|e| TransactionError::DatabaseError(e))
     }
 
-    async fn update(
-        &self,
-        id: Uuid,
-        other: UpdateTransaction,
-    ) -> Result<Option<Transaction>, TransactionError> {
+    async fn update(&self, id: Uuid, other: UpdateTransaction) -> OptionalTransactionResult {
         const QUERY: &str = "
             UPDATE transactions SET 
                 amount = $1, 
